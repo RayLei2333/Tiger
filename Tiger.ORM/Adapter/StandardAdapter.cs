@@ -5,6 +5,7 @@ using System.Text;
 using Dapper;
 using Tiger.ORM.ModelConfiguration;
 using System.Linq;
+using Tiger.ORM.Utilities;
 
 namespace Tiger.ORM.Adapter
 {
@@ -15,8 +16,12 @@ namespace Tiger.ORM.Adapter
         protected string RightPlaceholder { get; set; }
 
 
+
+
+        #region Insert sql
         public virtual string Insert(object entity, out DynamicParameters parameters)
         {
+            Check.NotNull(entity, "insert entity");
             string sqlTmpl = "INSERT INTO {0}({1}) VALUE ({2})";
             parameters = new DynamicParameters();
             //INSERT INTO table(C1,C2,C3,C4,C5) VALUES (@C1,@C2,@C3,@C4,@C5)
@@ -40,7 +45,6 @@ namespace Tiger.ORM.Adapter
             return sql;
         }
 
-        #region Insert sql
         private void AppendInsertKey(object entity, Type entityType, int columnCount, StringBuilder columnStr, StringBuilder columnParaStr, DynamicParameters parameters)
         {
             PropertyInfo key = Relations.GetKey(entityType);
@@ -88,7 +92,7 @@ namespace Tiger.ORM.Adapter
             }
         }
         #endregion
-        
+
         public virtual string Update(object entity, out DynamicParameters parameters)
         {
             //SQL : UPDATE table SET column1=@column1,column2=@column2 where key = @key;
@@ -121,21 +125,38 @@ namespace Tiger.ORM.Adapter
             return sql;
         }
 
+        #region Delete
         public virtual string Delete<T>(object key, out DynamicParameters parameters)
         {
-            StringBuilder sb = new StringBuilder();
+            Check.NotNull(key,"key");
             Type entityType = typeof(T);
-            //1、找到<T>对应的表名
-            string tableName = Relations.GetTableName(entityType);
-
-            //2、应该先找到该对象对应的主键
-            PropertyInfo property = Relations.GetKey(entityType);
-            string keyName = Relations.GetKeyName(property, out KeyAttribute keyAttribute);
-
-            string sql = $"DELETE FROM {tableName} WHERE {keyName}=@{keyName}";
             parameters = new DynamicParameters();
-            parameters.Add($"@{keyName}", key);
+            string sql = this.Delete(entityType, null, key, parameters);
             return sql;
         }
+
+        public virtual string Delete(object entity, out DynamicParameters parameters)
+        {
+            Check.NotNull(entity, "delete entity");
+            Type entityType = entity.GetType();
+            parameters = new DynamicParameters();
+            string sql = this.Delete(entityType, entity, null, parameters);
+            return sql;
+        }
+
+        private string Delete(Type entityType, object entity, object value, DynamicParameters parameters)
+        {
+            string tableName = Relations.GetTableName(entityType);
+            PropertyInfo property = Relations.GetKey(entityType);
+            string keyName = Relations.GetKeyName(property, out KeyAttribute keyAttribute);
+            string sql = $"DELETE FROM {tableName} WHERE {LeftPlaceholder}{keyName}{RightPlaceholder}=@{keyName}";
+            if (entity == null)
+                parameters.Add($"@{keyName}", value);
+            else
+                parameters.Add($"@{keyName}", property.GetValue(entity));
+            return sql;
+        }
+        #endregion
+
     }
 }

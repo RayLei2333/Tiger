@@ -12,5 +12,7 @@ namespace Tiger.ORM.Adapter
         string Update(object entity, out DynamicParameters parameters);
 
         string Delete<T>(object key,out DynamicParameters parameters);
+
+        string Delete(object entity, out DynamicParameters parameters);
     }
 }
