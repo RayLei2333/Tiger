@@ -154,5 +154,17 @@ namespace Tiger.ORM
 
             return column;
         }
+
+        public static string GetColumnName(PropertyInfo column)
+        {
+            string columnName = null;
+            ColumnAttribute columnAttr = column.GetCustomAttribute<ColumnAttribute>();
+            if (columnAttr == null || string.IsNullOrEmpty(columnAttr.Name))
+                columnName = column.Name;
+            else
+                columnName = columnAttr.Name;
+
+            return columnName;
+        }
     }
 }

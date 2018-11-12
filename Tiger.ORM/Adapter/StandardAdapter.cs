@@ -11,11 +11,11 @@ namespace Tiger.ORM.Adapter
     public abstract class StandardAdapter : ISqlAdapter
     {
         //占位符 类似于sqlserver中的关键词需要“[column]”
-        private string LeftPlaceholder { get; set; }
-        private string RightPlaceholder { get; set; }
+        protected string LeftPlaceholder { get; set; }
+        protected string RightPlaceholder { get; set; }
 
 
-        public virtual string Inser(object entity, out DynamicParameters parameters)
+        public virtual string Insert(object entity, out DynamicParameters parameters)
         {
             string sqlTmpl = "INSERT INTO {0}({1}) VALUE ({2})";
             parameters = new DynamicParameters();
@@ -64,18 +64,18 @@ namespace Tiger.ORM.Adapter
 
         private void AppendInsertColumn(object entity, IEnumerable<PropertyInfo> columns, StringBuilder columnStr, StringBuilder columnParaStr, DynamicParameters parameters)
         {
-            int count = columns.Count(),
+            int count = columns.Count() - 1,
                 index = 0;
 
             //append column
             foreach (var item in columns)
             {
-                string columnName = null;
-                ColumnAttribute columnAttr = item.GetCustomAttribute<ColumnAttribute>();
-                if (columnAttr == null)
-                    columnName = columnAttr.Name;
-                else
-                    columnName = item.Name;
+                string columnName = Relations.GetColumnName(item);
+                //ColumnAttribute columnAttr = item.GetCustomAttribute<ColumnAttribute>();
+                //if (columnAttr == null || string.IsNullOrEmpty(columnAttr.Name))
+                //    columnName = item.Name;
+                //else
+                //    columnName = columnAttr.Name;
                 columnStr.Append($@"{LeftPlaceholder}{columnName}{RightPlaceholder}");
                 columnParaStr.Append($"@{columnName}");
                 parameters.Add($"@{columnName}", item.GetValue(entity));
@@ -89,17 +89,36 @@ namespace Tiger.ORM.Adapter
         }
         #endregion
         
-
-
-        public virtual string Update(object eneity, out DynamicParameters parameters)
+        public virtual string Update(object entity, out DynamicParameters parameters)
         {
             //SQL : UPDATE table SET column1=@column1,column2=@column2 where key = @key;
-            Type entityType = eneity.GetType();
+            string sqlTmpl = "UPDATE {0} SET {1} WHERE {2}";
+            Type entityType = entity.GetType();
             parameters = new DynamicParameters();
+            string tableName = Relations.GetTableName(entityType);
+            IEnumerable<PropertyInfo> columns = Relations.GetColumns(entityType);
+            PropertyInfo key = Relations.GetKey(entityType);
+            string keyname = Relations.GetKeyName(key, out KeyAttribute keyAttribute);
 
+            StringBuilder columnStr = new StringBuilder(),
+                          keyStr = new StringBuilder();
+            keyStr.Append($"{LeftPlaceholder}{keyname}{RightPlaceholder}=@{keyname}");
+            parameters.Add($"@{keyname}", key.GetValue(entity));
 
-
-            return null;
+            int index = 0,
+                columnCount = columns.Count() - 1;
+            foreach (var item in columns)
+            {
+                string columnName = Relations.GetColumnName(item),
+                       paraName = $"@{columnName}";
+                columnStr.Append($"{LeftPlaceholder}{columnName}{RightPlaceholder}={paraName}");
+                parameters.Add(paraName, item.GetValue(entity));
+                if (index < columnCount)
+                    columnStr.Append(",");
+                index++;
+            }
+            string sql = string.Format(sqlTmpl, tableName, columnStr.ToString(), keyStr.ToString());
+            return sql;
         }
 
         public virtual string Delete<T>(object key, out DynamicParameters parameters)

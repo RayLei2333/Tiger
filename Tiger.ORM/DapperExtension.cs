@@ -7,25 +7,40 @@ using Dapper;
 
 namespace Tiger.ORM
 {
-    public static class DapperExtension
+    internal static class DapperExtension
     {
-        private static readonly ISqlAdapter DefaultAdapter = null;
+        private static readonly ISqlAdapter DefaultAdapter = new SqlServerAdapter();
         private static readonly Dictionary<string, ISqlAdapter> AdapterMap = new Dictionary<string, ISqlAdapter>()
         {
-            ["sqlconnection"] = null,
-            ["mysqlconnection"] = null
+            ["sqlconnection"] = new SqlServerAdapter(),
+            ["mysqlconnection"] = new MySqlAdapter()
         };
 
+        public static int Insert(this IDbConnection connection, object entity, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null)
+        {
+            ISqlAdapter adapter = GetAdapter(connection);
+            //OpenConnection(connection);
+            string sql = adapter.Insert(entity, out DynamicParameters parameters);
+            int result = connection.Execute(sql, parameters, transaction, commandTimeout, commandType);
+            //connection.Close();
+            return result;
+        }
+        
         public static int Delete<T>(this IDbConnection connection, object key, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null)
         {
             ISqlAdapter adapter = GetAdapter(connection);
-            OpenConnection(connection);
             string sql = adapter.Delete<T>(key, out DynamicParameters parameters);
             int result = connection.Execute(sql, parameters, transaction, commandTimeout, commandType);
-            connection.Close();
             return result;
         }
 
+        public static int Update(this IDbConnection connection,object entity,IDbTransaction transaction = null,int? commandTimeout = null,CommandType? commandType = null)
+        {
+            ISqlAdapter adapter = GetAdapter(connection);
+            string sql = adapter.Update(entity, out DynamicParameters parameters);
+            int result = connection.Execute(sql, parameters, transaction, commandTimeout, commandType);
+            return result;
+        }
 
         private static ISqlAdapter GetAdapter(IDbConnection connection)
         {
