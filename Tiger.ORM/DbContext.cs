@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using System.Text;
 using Dapper;
 using Tiger.ORM.Adapter;
@@ -22,72 +23,73 @@ namespace Tiger.ORM
 
         public IDbTransaction Transaction { get; set; }
 
-        //public DbContext()
-        //{
-
-        //}
-
         public DbContext(string nameOrConnectionString)
         {
             _appConfig.Initialize(nameOrConnectionString);
             Connection = ConnectionFactory.CreateConnection(_appConfig);
-
         }
 
-        //public DbContext(string connStr, DbProvider provider)
-        //{
-
-        //}
 
 
-
-        public virtual IEnumerable<T> Query<T>(string sql, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
+        public virtual IEnumerable<T> Query<T>(string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return this.Connection.Query<T>(sql, param, transaction, buffered, commandTimeout, commandType);
+            return this.Connection.Query<T>(sql, param, this.Transaction, buffered, commandTimeout, commandType);
         }
 
-        public virtual IEnumerable<object> Query(Type entityType, string sql, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
+        public virtual IEnumerable<object> Query(Type entityType, string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return this.Connection.Query(entityType, sql, param, transaction, buffered, commandTimeout, commandType);
+            return this.Connection.Query(entityType, sql, param, this.Transaction, buffered, commandTimeout, commandType);
         }
 
-        public virtual T Get<T>(string sql, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
+        public virtual T Get<T>(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return this.Connection.QueryFirstOrDefault<T>(sql, param, transaction, commandTimeout, commandType);
+            return this.Connection.QueryFirstOrDefault<T>(sql, param, this.Transaction, commandTimeout, commandType);
         }
 
-        public virtual long Insert(object entity, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null)
+        public virtual long Insert(object entity, int? commandTimeout = null, CommandType? commandType = null)
         {
             ISqlAdapter adapter = this.GetAdapter();
             string sql = adapter.Insert(entity, out DynamicParameters parameters);
-            int result = this.Connection.Execute(sql, parameters, transaction, commandTimeout, commandType);
+            int result = this.Connection.Execute(sql, parameters, this.Transaction, commandTimeout, commandType);
             return result;
         }
 
-        public virtual int Update(object entity, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null)
+
+        public virtual int Update(object entity, int? commandTimeout = null, CommandType? commandType = null)
         {
             ISqlAdapter adapter = GetAdapter();
             string sql = adapter.Update(entity, out DynamicParameters parameters);
-            int result = this.Connection.Execute(sql, parameters, transaction, commandTimeout, commandType);
+            int result = this.Connection.Execute(sql, parameters, this.Transaction, commandTimeout, commandType);
             return result;
         }
 
-        public virtual int Delete<T>(object key, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null)
+        public virtual int Update<T>(Expression<Func<T, object>> func)
+        {
+            return -1;
+        }
+
+        public virtual int Delete<T>(object key, int? commandTimeout = null, CommandType? commandType = null)
         {
             ISqlAdapter adapter = GetAdapter();
             string sql = adapter.Delete<T>(key, out DynamicParameters parameters);
-            int result = this.Connection.Execute(sql, parameters, transaction, commandTimeout, commandType);
+            int result = this.Connection.Execute(sql, parameters, this.Transaction, commandTimeout, commandType);
             return result;
         }
 
-        public virtual int Execute(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null)
+        public virtual int Delete<T>(Expression<Func<T, object>> func)
         {
-            return this.Connection.Execute(sql, param, transaction, commandTimeout, commandType);
+            return -1;
         }
 
-        public virtual T ExecuteScan<T>(string sql, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
+
+        public virtual int Execute(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return this.Connection.ExecuteScalar<T>(sql, param, transaction, commandTimeout, commandType);
+            return this.Connection.Execute(sql, param, this.Transaction, commandTimeout, commandType);
+        }
+
+        public virtual T ExecuteScan<T>(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        {
+            return this.Connection.ExecuteScalar<T>(sql, param, this.Transaction, commandTimeout, commandType);
         }
 
 
@@ -99,6 +101,17 @@ namespace Tiger.ORM
             return this.Transaction;
         }
 
+        public virtual void Commit()
+        {
+            if (this.Transaction != null)
+                this.Transaction.Commit();
+        }
+
+        public virtual void Roolback()
+        {
+            if (this.Transaction != null)
+                this.Transaction.Rollback();
+        }
 
         private ISqlAdapter GetAdapter()
         {

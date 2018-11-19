@@ -42,7 +42,8 @@ namespace Tiger.Test
             InsertEntity(u);
 
             UpdateEntity(u);
-
+            List<string> list = new List<string>();
+            list.Where(t => t == "asb").ToList();
 
             Console.ReadKey();
         }
@@ -95,5 +96,20 @@ namespace Tiger.Test
             Console.WriteLine("-----------------------");
         }
 
+
+        static void NewDbContext()
+        {
+            using (TestContext context = new TestContext())
+            {
+                context.Delete<Users>(t => t.Id == "123" && t.Name == "5465");
+                context.Update<Users>(t => new { Id = "123" ,Name = "456"});
+                //long result = context.Insert<Users>(t => new Users()
+                //{
+                //    Id = "123",
+                //    Height = 111,
+                //    Name = "233223"
+                //});
+            }
+        }
     }
 }
