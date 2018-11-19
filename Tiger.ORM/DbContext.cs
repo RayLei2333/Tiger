@@ -23,6 +23,9 @@ namespace Tiger.ORM
 
         public IDbTransaction Transaction { get; set; }
 
+        private bool _startTransaction = false;
+
+
         public DbContext(string nameOrConnectionString)
         {
             _appConfig.Initialize(nameOrConnectionString);
@@ -98,19 +101,27 @@ namespace Tiger.ORM
             if (this.Connection.State == ConnectionState.Closed || this.Connection.State == ConnectionState.Broken)
                 this.Connection.Open();
             this.Transaction = this.Connection.BeginTransaction();
+            _startTransaction = true;
             return this.Transaction;
         }
 
         public virtual void Commit()
         {
-            if (this.Transaction != null)
+            if (this.Transaction != null && _startTransaction == true)
+            {
                 this.Transaction.Commit();
+                _startTransaction = false;
+            }
+
         }
 
         public virtual void Roolback()
         {
-            if (this.Transaction != null)
+            if (this.Transaction != null && _startTransaction == true)
+            {
                 this.Transaction.Rollback();
+                _startTransaction = false;
+            }
         }
 
         private ISqlAdapter GetAdapter()
@@ -124,7 +135,15 @@ namespace Tiger.ORM
         public virtual void Dispose()
         {
             if (this.Transaction != null)
+            {
+                //在Dispose 前没有commit 事物，那么在这里执行事物commit，再Dispose 事物
+                if (_startTransaction)
+                {
+                    this.Transaction.Commit();
+                    _startTransaction = false;
+                }
                 this.Transaction.Dispose();
+            }
             if (this.Connection != null)
             {
                 this.Connection.Close();

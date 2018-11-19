@@ -14,13 +14,13 @@ namespace Tiger.ORM
     public static class Relations
     {
         //Runtime object to database table name;
-        private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> TypeTableName = new ConcurrentDictionary<RuntimeTypeHandle, string>();
+        private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> _typeTableName = new ConcurrentDictionary<RuntimeTypeHandle, string>();
 
         //Runtime object properties to database table column name;
-        private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>> TypeColumn = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>>();
+        private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>> _typeColumn = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>>();
 
         //Runtime object properties to database primary key; need ues [KeyAttribute]
-        private static readonly ConcurrentDictionary<RuntimeTypeHandle, PropertyInfo> TypeKey = new ConcurrentDictionary<RuntimeTypeHandle, PropertyInfo>();
+        private static readonly ConcurrentDictionary<RuntimeTypeHandle, PropertyInfo> _typeKey = new ConcurrentDictionary<RuntimeTypeHandle, PropertyInfo>();
 
         /// <summary>
         /// object relation to db
@@ -64,7 +64,7 @@ namespace Tiger.ORM
             else
                 tableName = tableAttr.Name;
             //save table
-            bool saveResult = TypeTableName.TryAdd(runtimeTypeHandle, tableName);
+            bool saveResult = _typeTableName.TryAdd(runtimeTypeHandle, tableName);
             if (!saveResult)
                 throw new Tiger.ORM.Exceptions.TigerORMException("try add table to ConcurrentDictionary error.");
 
@@ -76,14 +76,14 @@ namespace Tiger.ORM
             if (keyProperty == null)
                 throw new Tiger.ORM.Exceptions.TigerORMException($"{typeofClass.FullName} not define KeyAttribute.");
 
-            bool result = TypeKey.TryAdd(runtimeTypeHandle, keyProperty);
+            bool result = _typeKey.TryAdd(runtimeTypeHandle, keyProperty);
             if (!result)
                 throw new Tiger.ORM.Exceptions.TigerORMException("try add key to ConcurrentDictionary error.");
 
         }
         private static void ObjectMapColumn(RuntimeTypeHandle runtimeTypeHandle, Type typeofClass, IEnumerable<PropertyInfo> properties)
         {
-            bool result = TypeColumn.TryAdd(runtimeTypeHandle, properties);
+            bool result = _typeColumn.TryAdd(runtimeTypeHandle, properties);
             if (!result)
                 throw new Tiger.ORM.Exceptions.TigerORMException("try add column to ConcurrentDictionary error.");
         }
@@ -97,9 +97,9 @@ namespace Tiger.ORM
         public static string GetTableName(Type typeofClass)
         {
             RuntimeTypeHandle typeHandle = typeofClass.TypeHandle;
-            if (!TypeTableName.ContainsKey(typeHandle))
+            if (!_typeTableName.ContainsKey(typeHandle))
                 ObjectMap(typeofClass);
-            TypeTableName.TryGetValue(typeHandle, out string tableName);
+            _typeTableName.TryGetValue(typeHandle, out string tableName);
 
             return tableName;
         }
@@ -113,10 +113,10 @@ namespace Tiger.ORM
         public static PropertyInfo GetKey(Type typeofClass)
         {
             RuntimeTypeHandle typeHandle = typeofClass.TypeHandle;
-            if (!TypeKey.ContainsKey(typeHandle))
+            if (!_typeKey.ContainsKey(typeHandle))
                 ObjectMap(typeofClass);
 
-            TypeKey.TryGetValue(typeHandle, out PropertyInfo key);
+            _typeKey.TryGetValue(typeHandle, out PropertyInfo key);
             return key;
 
         }
@@ -148,9 +148,9 @@ namespace Tiger.ORM
         public static IEnumerable<PropertyInfo> GetColumns(Type typeofClass)
         {
             RuntimeTypeHandle typeHandle = typeofClass.TypeHandle;
-            if (!TypeColumn.ContainsKey(typeHandle))
+            if (!_typeColumn.ContainsKey(typeHandle))
                 ObjectMap(typeofClass);
-            TypeColumn.TryGetValue(typeHandle, out IEnumerable<PropertyInfo> column);
+            _typeColumn.TryGetValue(typeHandle, out IEnumerable<PropertyInfo> column);
 
             return column;
         }
