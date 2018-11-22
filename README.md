@@ -1,5 +1,4 @@
 # Tiger.ORM - a dapper extension
-================================
 
 Features
 --------
@@ -11,6 +10,18 @@ How to use it?
 --------------
 The use of ORM requires 4 steps.
 > 1.Add configuration file.
+
 > 2.Defining the data model.
+
 > 3.Defining the data context.
+
 > 4.Perform data operations.
+
+configuration
+-------------
+```xml
+    <!--sql server config-->
+    <add name="db" connectionString="Data Source=.;Initial Catalog=testdb;User ID=sa;Password=****;" providerName="System.Data.SqlClient" />
+    <!--mysql config-->
+    <add name="db" connectionString="Data Source=.;Initial Catalog=testdb;User ID=sa;Password=****;" providerName="MySql.Data.MySqlClient" />
+```
