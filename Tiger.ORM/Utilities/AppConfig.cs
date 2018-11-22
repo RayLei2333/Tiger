@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Tiger.ORM.Utilities
 {
-    internal class AppConfig
+    public class AppConfig
     {
         public string ConnectionName { get; set; }
 

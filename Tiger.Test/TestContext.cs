@@ -9,7 +9,7 @@ namespace Tiger.Test
 {
     public class TestContext : DbContext
     {
-        public TestContext() : base("3321")
+        public TestContext() : base("monkey")
         {
         }
     }

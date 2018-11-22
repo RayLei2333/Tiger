@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using Dapper;
 using Tiger.ORM.Adapter;
+using Tiger.ORM.LambdaExpression;
 using Tiger.ORM.Utilities;
 
 namespace Tiger.ORM
@@ -57,7 +59,6 @@ namespace Tiger.ORM
             return result;
         }
 
-
         public virtual int Update(object entity, int? commandTimeout = null, CommandType? commandType = null)
         {
             ISqlAdapter adapter = GetAdapter();
@@ -66,9 +67,21 @@ namespace Tiger.ORM
             return result;
         }
 
-        public virtual int Update<T>(Expression<Func<T, object>> func)
+        public virtual ITigerLambda<T> Update<T>(Expression<Func<T, T>> selector)
         {
-            return -1;
+            Dictionary<PropertyInfo, object> updateCollection = new Dictionary<PropertyInfo, object>();
+            MemberInitExpression member = selector.Body as MemberInitExpression;
+            foreach (var item in member.Bindings)
+            {
+                MemberAssignment assignment = item as MemberAssignment;
+                ConstantExpression constant = assignment.Expression as ConstantExpression;
+                PropertyInfo property = (PropertyInfo)assignment.Member;
+                updateCollection.Add(property, constant.Value);
+            }
+            return new UpdateLambda<T>(updateCollection,
+                                       this.Connection,
+                                       this.Transaction,
+                                       this._appConfig);
         }
 
         public virtual int Delete<T>(object key, int? commandTimeout = null, CommandType? commandType = null)
@@ -83,7 +96,6 @@ namespace Tiger.ORM
         {
             return -1;
         }
-
 
         public virtual int Execute(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
         {
