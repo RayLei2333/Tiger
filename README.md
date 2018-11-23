@@ -70,18 +70,19 @@ Example usage:
 using (TestContext context = new TestContext())
 {
     //insert 
+    //generate sql: INSERT ITNO user(id,UserName,Gender,Height) VALUES ('70eaf55c-099c-42d7-bc31-c49a92a29775','Ray',2,22)
     long inserResult = context.Insert(new Users()
     {
+        Id = "70eaf55c-099c-42d7-bc31-c49a92a29775",
         Gender = 2,
         Name = "Ray",
-        CreatTime = DateTime.Now,
         Height = 22
     });
 
     //update
+    //generate sql: UPDATE user SET Gender=1,Height=25,UserName='Ray2' WHERE id='70eaf55c-099c-42d7-bc31-c49a92a29775'
     int updateResult1 = context.Update(new Users()
     {
-        CreatTime = DateTime.Now,
         Gender = 1,
         Height = 25,
         Name = "Ray2",
@@ -89,6 +90,7 @@ using (TestContext context = new TestContext())
     });
 
     //update lambda
+    //generate sql: UPDATE user SET UserName='Ray',Gender=2 WHERE id='70eaf55c-099c-42d7-bc31-c49a92a29775'
     int updateResult2 = context.Update<Users>(t => new Users
     {
         Name = "Ray",
@@ -96,9 +98,11 @@ using (TestContext context = new TestContext())
     }).Where(t => t.Id == "70eaf55c-099c-42d7-bc31-c49a92a29775").Execute();
 
     //delete
+    //generate sql: DELETE FROM user WHERE id='70eaf55c-099c-42d7-bc31-c49a92a29775'
     int deleteResult1 = context.Delete<Users>("70eaf55c-099c-42d7-bc31-c49a92a29775");
 
     //delete lambda
+    //generate sql: DELETE FROM user WHERE UserName='Ray'
     int deleteResult2 = context.Delete<Users>()
                                .Where(t => t.Name == "Ray").Execute();
 }
