@@ -9,10 +9,10 @@ Two databases are now supported(`SqlServer` `MySql`).
 How to use it?
 --------------
 The use of ORM requires 4 steps.
-> 1.Add configuration file.<br>
-> 2.Defining the data model.<br>
-> 3.Defining the data context.<br>
-> 4.Perform data operations.<br>
+> [1.Add configuration file.](#configuration)<br>
+> [2.Defining the data model.](#defining-data-model)<br>
+> [3.Defining the data context.](#defining-data-context)<br>
+> [4.Perform data operations.](#data-operations)<br>
 
 configuration
 -------------
@@ -59,7 +59,47 @@ public class TestContext : DbContext
 
     public TestContext() : base(new MySqlConnection("connection string"))
     {
-
     }
+}
+```
+
+Data operations
+---------------
+Example usage:
+```csharp
+using (TestContext context = new TestContext())
+{
+    //insert 
+    long inserResult = context.Insert(new Users()
+    {
+        Gender = 2,
+        Name = "Ray",
+        CreatTime = DateTime.Now,
+        Height = 22
+    });
+
+    //update
+    int updateResult1 = context.Update(new Users()
+    {
+        CreatTime = DateTime.Now,
+        Gender = 1,
+        Height = 25,
+        Name = "Ray2",
+        Id = "70eaf55c-099c-42d7-bc31-c49a92a29775"  //primary key it is necessary.
+    });
+
+    //update lambda
+    int updateResult2 = context.Update<Users>(t => new Users
+    {
+        Name = "Ray",
+        Gender = 2
+    }).Where(t => t.Id == "70eaf55c-099c-42d7-bc31-c49a92a29775").Execute();
+
+    //delete
+    int deleteResult1 = context.Delete<Users>("70eaf55c-099c-42d7-bc31-c49a92a29775");
+
+    //delete lambda
+    int deleteResult2 = context.Delete<Users>()
+                               .Where(t => t.Name == "Ray").Execute();
 }
 ```

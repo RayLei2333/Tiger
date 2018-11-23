@@ -47,33 +47,39 @@ namespace Tiger.Test
 
             using (TestContext context = new TestContext())
             {
-                //context.Update<TB_Customer_Info>(t => new TB_Customer_Info
-                //{
-                //    Id = "123",
-                //    NickName = "abcdk",
-                //}).Where(t =>new { t.Id == "123"&&t.NickName = "" }).Execute();
-                //var a = context.Update<TB_Customer_Info>(t => new TB_Customer_Info
-                //{
-                //    Id = "123",
-                //    NickName = "abcdk",
-                //});
-                //a = a.Where(t => t.CreateTime == DateTime.Now);
-                //a = a.Where(t => t.UpdateTime == DateTime.MaxValue);
-                //int reuslt = a.Execute();
-
-                context.Update<TB_Customer_Info>(t => new TB_Customer_Info
+                //insert 
+                long inserResult = context.Insert(new Users()
                 {
-                    Id = "123",
-                    NickName = "abcdk",
-                }).Where(t => t.Id == "123" && t.NickName.Contains("ray") || t.UnionId == "unionid").Execute();
+                    Gender = 2,
+                    Name = "Ray",
+                    CreatTime = DateTime.Now,
+                    Height = 22
+                });
 
-                //context.Update<TB_Customer_Info>().Where().Execute();
+                //update
+                int updateResult1 = context.Update(new Users()
+                {
+                    CreatTime = DateTime.Now,
+                    Gender = 1,
+                    Height = 25,
+                    Name = "Ray2",
+                    Id = "70eaf55c-099c-42d7-bc31-c49a92a29775"  //primary key it is necessary.
+                });
+
+                //update lambda
+                int updateResult2 = context.Update<Users>(t => new Users
+                {
+                    Name = "Ray",
+                    Gender = 2
+                }).Where(t => t.Id == "70eaf55c-099c-42d7-bc31-c49a92a29775").Execute();
+
+                //delete
+                int deleteResult1 = context.Delete<Users>("70eaf55c-099c-42d7-bc31-c49a92a29775");
+
+                //delete lambda
+                int deleteResult2 = context.Delete<Users>()
+                                           .Where(t => t.Name == "Ray").Execute();
             }
-
-            //List<string> list = new List<string>();
-            //list.Where(t => t == "123" && t == "456").ToList()
-
-            //QueryAllCustomer();
 
             Console.ReadKey();
         }

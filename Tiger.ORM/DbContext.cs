@@ -26,18 +26,18 @@ namespace Tiger.ORM
         public IDbTransaction Transaction { get; set; }
 
         private bool _startTransaction = false;
-        
+
         public DbContext(string nameOrConnectionString)
         {
             _appConfig.Initialize(nameOrConnectionString);
             Connection = ConnectionFactory.CreateConnection(_appConfig);
         }
-        
+
         public DbContext(IDbConnection connection)
         {
             this.Connection = connection;
         }
-        
+
         public virtual IEnumerable<T> Query<T>(string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
             return this.Connection.Query<T>(sql, param, this.Transaction, buffered, commandTimeout, commandType);
@@ -95,9 +95,12 @@ namespace Tiger.ORM
             return result;
         }
 
-        public virtual int Delete<T>()
+        public virtual ITigerLambda<T> Delete<T>()
         {
-            return -1;
+            ISqlAdapter adapter = GetAdapter();
+            return new DeleteLambda<T>(this.Connection,
+                                       this.Transaction,
+                                       adapter);
         }
 
         public virtual int Execute(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
