@@ -1,4 +1,4 @@
 language:csharp
 solution:Tiger.ORM.sln
 install:
-  - nuget instal Dapper -Version 1.50.5 
+  - nuget install Dapper -Version 1.50.5
