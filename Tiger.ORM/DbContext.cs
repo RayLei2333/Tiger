@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using Dapper;
 using Tiger.ORM.Adapter;
-using Tiger.ORM.LambdaExpression;
+using Tiger.ORM.Expressions;
 using Tiger.ORM.Utilities;
 
 namespace Tiger.ORM
@@ -26,16 +26,18 @@ namespace Tiger.ORM
         public IDbTransaction Transaction { get; set; }
 
         private bool _startTransaction = false;
-
-
+        
         public DbContext(string nameOrConnectionString)
         {
             _appConfig.Initialize(nameOrConnectionString);
             Connection = ConnectionFactory.CreateConnection(_appConfig);
         }
-
-
-
+        
+        public DbContext(IDbConnection connection)
+        {
+            this.Connection = connection;
+        }
+        
         public virtual IEnumerable<T> Query<T>(string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
             return this.Connection.Query<T>(sql, param, this.Transaction, buffered, commandTimeout, commandType);
@@ -69,6 +71,7 @@ namespace Tiger.ORM
 
         public virtual ITigerLambda<T> Update<T>(Expression<Func<T, T>> selector)
         {
+            ISqlAdapter adapter = this.GetAdapter();
             Dictionary<PropertyInfo, object> updateCollection = new Dictionary<PropertyInfo, object>();
             MemberInitExpression member = selector.Body as MemberInitExpression;
             foreach (var item in member.Bindings)
@@ -81,7 +84,7 @@ namespace Tiger.ORM
             return new UpdateLambda<T>(updateCollection,
                                        this.Connection,
                                        this.Transaction,
-                                       this._appConfig);
+                                       adapter);
         }
 
         public virtual int Delete<T>(object key, int? commandTimeout = null, CommandType? commandType = null)
@@ -92,7 +95,7 @@ namespace Tiger.ORM
             return result;
         }
 
-        public virtual int Delete<T>(Expression<Func<T, object>> func)
+        public virtual int Delete<T>()
         {
             return -1;
         }

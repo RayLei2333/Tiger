@@ -52,20 +52,20 @@ namespace Tiger.Test
                 //    Id = "123",
                 //    NickName = "abcdk",
                 //}).Where(t =>new { t.Id == "123"&&t.NickName = "" }).Execute();
-                var a = context.Update<TB_Customer_Info>(t => new TB_Customer_Info
-                {
-                    Id = "123",
-                    NickName = "abcdk",
-                });
-                a = a.Where(t => t.CreateTime == DateTime.Now);
-                a = a.Where(t => t.UpdateTime == DateTime.MaxValue);
-                int reuslt = a.Execute();
+                //var a = context.Update<TB_Customer_Info>(t => new TB_Customer_Info
+                //{
+                //    Id = "123",
+                //    NickName = "abcdk",
+                //});
+                //a = a.Where(t => t.CreateTime == DateTime.Now);
+                //a = a.Where(t => t.UpdateTime == DateTime.MaxValue);
+                //int reuslt = a.Execute();
 
                 context.Update<TB_Customer_Info>(t => new TB_Customer_Info
                 {
                     Id = "123",
                     NickName = "abcdk",
-                }).Where(t => t.Id == "123" && t.NickName == "ray").Execute();
+                }).Where(t => t.Id == "123" && t.NickName.Contains("ray") || t.UnionId == "unionid").Execute();
 
                 //context.Update<TB_Customer_Info>().Where().Execute();
             }

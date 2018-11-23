@@ -44,8 +44,11 @@
     <Compile Include="ConnectionFactory.cs" />
     <Compile Include="DbContext.cs" />
     <Compile Include="Exceptions\TigerORMException.cs" />
-    <Compile Include="LambdaExpression\ITigerLambda.cs" />
-    <Compile Include="LambdaExpression\UpdateLambda.cs" />
+    <Compile Include="Expressions\DeleteLambda.cs" />
+    <Compile Include="Expressions\ExpressionAnalysis.cs" />
+    <Compile Include="Expressions\ITigerLambda.cs" />
+    <Compile Include="Utilities\LambdaWhereEntity.cs" />
+    <Compile Include="Expressions\UpdateLambda.cs" />
     <Compile Include="ModelConfiguration\BaseModelConfigAttribute.cs" />
     <Compile Include="ModelConfiguration\ColumnAttribute.cs" />
     <Compile Include="ModelConfiguration\IgnoreAttribute.cs" />
@@ -55,6 +58,7 @@
     <Compile Include="Relations.cs" />
     <Compile Include="Utilities\AppConfig.cs" />
     <Compile Include="Utilities\Check.cs" />
+    <Compile Include="Utilities\MemberType.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper">

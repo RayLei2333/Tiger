@@ -15,9 +15,6 @@ namespace Tiger.ORM.Adapter
         protected string LeftPlaceholder { get; set; }
         protected string RightPlaceholder { get; set; }
 
-
-
-
         #region Insert sql
         public virtual string Insert(object entity, out DynamicParameters parameters)
         {
@@ -125,10 +122,101 @@ namespace Tiger.ORM.Adapter
             return sql;
         }
 
+        public virtual string Update<T>(Dictionary<PropertyInfo, object> updateCollection, IEnumerable<LambdaWhereEntity> updateCondition, out DynamicParameters parameters)
+        {
+            Type entityType = typeof(T);
+            parameters = new DynamicParameters();
+            string tableName = Relations.GetTableName(entityType);
+            IEnumerable<PropertyInfo> columns = Relations.GetColumns(entityType);
+            PropertyInfo key = Relations.GetKey(entityType);
+            string keyname = Relations.GetKeyName(key, out KeyAttribute keyAttribute);
+            string sqlTmpl = "UPDATE {0} SET {1} WHERE {2}";
+            StringBuilder columnStr = new StringBuilder(),
+                          whereStr = new StringBuilder();
+            int index = 0,
+                columnCount = updateCollection.Count - 1;
+            foreach (var item in updateCollection)
+            {
+                string columnName = null;
+                if (item.Key.Name == key.Name)
+                    columnName = keyname;
+                else
+                    columnName = Relations.GetColumnName(item.Key);
+                string paraName = $"@{columnName}";
+                columnStr.Append($"{LeftPlaceholder}{columnName}{RightPlaceholder}={paraName}");
+                parameters.Add(paraName, item.Value);
+                if (index < columnCount)
+                    columnStr.Append(",");
+                index++;
+            }
+            foreach (LambdaWhereEntity item in updateCondition)
+            {
+                if (item.Property == null)
+                {
+                    whereStr.Append($" {item.Operation} ");
+                    continue;
+                }
+                string columnName = null;
+                if (item.Property.Name == key.Name)
+                    columnName = keyname;
+                else
+                    columnName = Relations.GetColumnName(item.Property);
+
+                if (item.Operation.ToLower() != "like")
+                {
+                    string paraName = $"@{columnName}";
+                    whereStr.Append($"{LeftPlaceholder}{columnName}{RightPlaceholder}{item.Operation}{paraName}");
+                    parameters.Add(paraName, item.Value);
+                }
+                else
+                    whereStr.Append($"{LeftPlaceholder}{columnName}{RightPlaceholder} {item.Operation} {item.Value}");
+
+
+            }
+            string sql = string.Format(sqlTmpl, tableName, columnStr.ToString(), whereStr.ToString());
+            return sql;
+        }
+
         #region Delete
+        public virtual string Delete<T>(List<LambdaWhereEntity> deleteCondition, out DynamicParameters parameters)
+        {
+            Type entityType = typeof(T);
+            parameters = new DynamicParameters();
+            string tableName = Relations.GetTableName(entityType);
+            PropertyInfo key = Relations.GetKey(entityType);
+            string keyName = Relations.GetKeyName(key, out KeyAttribute keyAttribute);
+            StringBuilder sb = new StringBuilder();
+            //DELETE FROM {} WHERE C1=@V1 AND ..
+            foreach (var item in deleteCondition)
+            {
+                if (item.Property == null)
+                {
+                    sb.Append($" {item.Operation} ");
+                    continue;
+                }
+                string columnName = null;
+                if (item.Property.Name == key.Name)
+                    columnName = keyName;
+                else
+                    columnName = Relations.GetColumnName(item.Property);
+
+                if (item.Operation.ToLower() != "like")
+                {
+                    string paraName = $"@{columnName}";
+                    sb.Append($"{LeftPlaceholder}{columnName}{RightPlaceholder}{item.Operation}{paraName}");
+                    parameters.Add(paraName, item.Value);
+                }
+                else
+                    sb.Append($"{LeftPlaceholder}{columnName}{RightPlaceholder} {item.Operation} {item.Value}");
+            }
+
+            string sql = $"DELETE FROM {tableName} WHERE {sb.ToString()}";
+            return sql;
+        }
+
         public virtual string Delete<T>(object key, out DynamicParameters parameters)
         {
-            Check.NotNull(key,"key");
+            Check.NotNull(key, "key");
             Type entityType = typeof(T);
             parameters = new DynamicParameters();
             string sql = this.Delete(entityType, null, key, parameters);

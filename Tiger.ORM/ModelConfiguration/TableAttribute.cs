@@ -9,6 +9,7 @@ namespace Tiger.ORM.ModelConfiguration
     [AttributeUsage(AttributeTargets.Class)]
     public class TableAttribute : BaseModelConfigAttribute
     {
+       
         public TableAttribute() { }
         
         public TableAttribute(string table)
