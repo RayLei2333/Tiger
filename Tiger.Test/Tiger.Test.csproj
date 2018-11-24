@@ -61,6 +61,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestContext.cs" />
+    <Compile Include="TigerQuery.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -68,7 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tiger.ORM\Tiger.ORM.csproj">
-      <Project>{CE4C0254-E6F6-4601-BABC-4C8EB332942C}</Project>
+      <Project>{63817C75-A351-4583-BAA4-62631C5D71D1}</Project>
       <Name>Tiger.ORM</Name>
     </ProjectReference>
   </ItemGroup>
