@@ -13,7 +13,7 @@ namespace Tiger.ORM
 {
     public abstract class DbContext : IDisposable
     {
-        //private AppConfig _appConfig = new AppConfig();
+        private AppConfig _appConfig = new AppConfig();
         private static readonly ISqlAdapter _defaultAdapter = new SqlServerAdapter();
         private static readonly Dictionary<string, ISqlAdapter> _adapterMap = new Dictionary<string, ISqlAdapter>()
         {
@@ -27,14 +27,10 @@ namespace Tiger.ORM
 
         private bool _startTransaction = false;
 
-        //public DbContext(string nameOrConnectionString)
-        //{
-        //    _appConfig.Initialize(nameOrConnectionString);
-        //    Connection = ConnectionFactory.CreateConnection(_appConfig);
-        //}
-        public DbContext(DbType db, string connectionString)
+        public DbContext(string nameOrConnectionString)
         {
-            this.Connection = ConnectionFactory.CrateConnection(db, connectionString);
+            _appConfig.Initialize(nameOrConnectionString);
+            Connection = ConnectionFactory.CreateConnection(_appConfig);
         }
 
         public DbContext(IDbConnection connection)

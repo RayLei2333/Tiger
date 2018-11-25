@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Tiger.Test
 {
     public class TestContext : DbContext
     {
-        public TestContext() : base("name or connection")
+        public TestContext() : base(new SqlConnection(""))
         {
         }
 
