@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tiger.ORM;
 using Tiger.ORM.Adapter;
+using Tiger.ORM.Expressions;
 using Tiger.ORM.Expressions.Query;
 using Tiger.ORM.Utilities;
 using Tiger.Test.Model;
@@ -22,9 +23,15 @@ namespace Tiger.Test
 
 
             var a = list.Where(t => t == "").ToList();
-            SqlServerQueryable<TB_Customer_Info> queryable = new SqlServerQueryable<TB_Customer_Info>();
-            //queryable.Select(t => t.City,t.b,t.c).ToList()
-            queryable.Select(t => new { t.Id, t.City }).ToList();
+            //IQueryable<Users>
+            //a.OrderByDescending
+            //SqlServerQueryable<TB_Customer_Info> queryable = new SqlServerQueryable<TB_Customer_Info>();
+            ////queryable.Select(t => t.City,t.b,t.c).ToList()
+            //queryable.Select(t => new { t.Id, t.City }).ToList();
+            TigerQueryable<TB_Customer_Info> queryable = new TigerQueryable<TB_Customer_Info>();
+            queryable.OrderBy(t => new { t.BrandId,t.Country });
+
+
 
         }
 

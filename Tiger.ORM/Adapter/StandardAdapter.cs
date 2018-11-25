@@ -9,6 +9,10 @@ using Tiger.ORM.Utilities;
 
 namespace Tiger.ORM.Adapter
 {
+
+    /// <summary>
+    /// None Query Sql Generate
+    /// </summary>
     public abstract class StandardAdapter : ISqlAdapter
     {
         //占位符 类似于sqlserver中的关键词需要“[column]”

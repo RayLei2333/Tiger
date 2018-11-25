@@ -27,6 +27,7 @@ configuration
 
 Defining data model
 -------------------
+This way the data model is highly coupled.
 Example usage:
 
 ```csharp
