@@ -1,5 +1,4 @@
-﻿using Dapper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -9,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tiger.ORM;
 using Tiger.ORM.Adapter;
+using Tiger.ORM.Expressions.Query;
 using Tiger.ORM.Utilities;
 using Tiger.Test.Model;
 
@@ -18,6 +18,14 @@ namespace Tiger.Test
     {
         static void Main(string[] args)
         {
+            List<string> list = new List<string>();
+
+
+            var a = list.Where(t => t == "").ToList();
+            SqlServerQueryable<TB_Customer_Info> queryable = new SqlServerQueryable<TB_Customer_Info>();
+            //queryable.Select(t => t.City,t.b,t.c).ToList()
+            queryable.Select(t => new { t.Id, t.City }).ToList();
+
         }
 
 

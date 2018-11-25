@@ -8,6 +8,7 @@ using Dapper;
 using Tiger.ORM.Adapter;
 using Tiger.ORM.Expressions;
 using Tiger.ORM.Utilities;
+using Tiger.ORM.Expressions.Query;
 
 namespace Tiger.ORM
 {
@@ -27,11 +28,6 @@ namespace Tiger.ORM
 
         private bool _startTransaction = false;
 
-        //public DbContext(string nameOrConnectionString)
-        //{
-        //    _appConfig.Initialize(nameOrConnectionString);
-        //    Connection = ConnectionFactory.CreateConnection(_appConfig);
-        //}
         public DbContext(DbType db, string connectionString)
         {
             this.Connection = ConnectionFactory.CrateConnection(db, connectionString);
@@ -40,6 +36,12 @@ namespace Tiger.ORM
         public DbContext(IDbConnection connection)
         {
             this.Connection = connection;
+        }
+
+        public virtual ITigerQueryable<T> Query<T>()
+        {
+            ITigerQueryable<T> queryable = this.GetQueryable<T>();
+            return queryable;
         }
 
         public virtual IEnumerable<T> Query<T>(string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
@@ -118,11 +120,14 @@ namespace Tiger.ORM
         }
 
 
-        public virtual IDbTransaction BeginTransaction()
+        public virtual IDbTransaction BeginTransaction(IsolationLevel? il = null)
         {
             if (this.Connection.State == ConnectionState.Closed || this.Connection.State == ConnectionState.Broken)
                 this.Connection.Open();
-            this.Transaction = this.Connection.BeginTransaction();
+            if (il == null)
+                this.Transaction = this.Connection.BeginTransaction();
+            else
+                this.Transaction = this.Connection.BeginTransaction(il.Value);
             _startTransaction = true;
             return this.Transaction;
         }
@@ -149,9 +154,19 @@ namespace Tiger.ORM
         private ISqlAdapter GetAdapter()
         {
             string dbType = this.Connection.GetType().Name.ToLower();
-            if (_adapterMap.ContainsKey(dbType))
+            if (!_adapterMap.ContainsKey(dbType))
                 return _defaultAdapter;
             return _adapterMap[dbType];
+        }
+
+        private ITigerQueryable<T> GetQueryable<T>()
+        {
+            string dbType = this.Connection.GetType().Name.ToLower();
+            if (dbType == "sqlconnection")
+                return new SqlServerQueryable<T>(this.Connection, this.Transaction);
+            if (dbType == "mysqlconnection")
+                return new MySqlQueryable<T>(this.Connection, this.Transaction);
+            return new SqlServerQueryable<T>(this.Connection, this.Transaction);
         }
 
         public virtual void Dispose()
