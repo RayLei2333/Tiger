@@ -81,6 +81,7 @@ namespace Tiger.ORM.Expressions
         #region 执行层
         public T FirstOrDefault()
         {
+            this._queryEntity.Top = 1;
             return default(T);
         }
 

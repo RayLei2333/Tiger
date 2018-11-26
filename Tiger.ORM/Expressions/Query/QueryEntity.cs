@@ -6,11 +6,14 @@ using Tiger.ORM.Utilities;
 
 namespace Tiger.ORM.Expressions.Query
 {
-    internal class QueryEntity
+    public class QueryEntity
     {
         public QueryEntity()
         {
+            this.Top = -1;
         }
+
+        public int Top { get; set; }
 
         public List<LambdaWhereEntity> QueryCondition { get; set; }
 

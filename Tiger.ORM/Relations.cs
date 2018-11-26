@@ -126,18 +126,12 @@ namespace Tiger.ORM
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static string GetKeyName(PropertyInfo property,out KeyAttribute keyAttribute)
+        public static string GetKeyName(PropertyInfo property, out KeyAttribute keyAttribute)
         {
             keyAttribute = property.GetCustomAttribute<KeyAttribute>();
             if (string.IsNullOrEmpty(keyAttribute.Name))
                 return property.Name;
             return keyAttribute.Name;
-            //PropertyInfo property = GetKey(typeofClass);
-            //KeyAttribute keyAttribute = property.GetCustomAttribute<KeyAttribute>();
-            //if (string.IsNullOrEmpty(keyAttribute.Name))
-            //    return property.Name;
-            //else
-            //return keyAttribute.Name;
         }
 
         /// <summary>
@@ -165,6 +159,26 @@ namespace Tiger.ORM
                 columnName = columnAttr.Name;
 
             return columnName;
+        }
+
+        public static string GetColumnNameIncludeKey(PropertyInfo property)
+        {
+            KeyAttribute keyAttr = property.GetCustomAttribute<KeyAttribute>();
+            if (keyAttr != null)
+            {
+                if (string.IsNullOrEmpty(keyAttr.Name))
+                    return property.Name;
+                return keyAttr.Name;
+            }
+            else
+            {
+                //column 
+                ColumnAttribute columnAttr = property.GetCustomAttribute<ColumnAttribute>();
+                if (columnAttr == null || string.IsNullOrEmpty(columnAttr.Name))
+                    return property.Name;
+                else
+                    return columnAttr.Name;
+            }
         }
     }
 }
