@@ -38,12 +38,12 @@ namespace Tiger.ORM
             this.Connection = connection;
         }
 
-        public virtual ITigerQueryable<T> Query<T>()
-        {
-            return new TigerQueryable<T>();
-            //ITigerQueryable<T> queryable = this.GetQueryable<T>();
-            //return queryable;
-        }
+        //public virtual ITigerQueryable<T> Query<T>()
+        //{
+        //    return new TigerQueryable<T>(this.Connection, this.Transaction);
+        //    //ITigerQueryable<T> queryable = this.GetQueryable<T>();
+        //    //return queryable;
+        //}
 
         public virtual IEnumerable<T> Query<T>(string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
@@ -159,7 +159,7 @@ namespace Tiger.ORM
                 return _defaultAdapter;
             return _adapterMap[dbType];
         }
-        
+
         public virtual void Dispose()
         {
             if (this.Transaction != null)

@@ -14,9 +14,9 @@ namespace Tiger.ORM.Adapter
         private readonly string _leftPlaceholder = "[";
         private readonly string _rightPlaceholder = "]";
 
-        public string GenerateSQL<T>(QueryEntity entity)
+        public string GenerateSQL<T>(QueryEntity entity, out DynamicParameters parameters)
         {
-            DynamicParameters parameters = new DynamicParameters();
+            parameters = new DynamicParameters();
             Type entityType = typeof(T);
             string tableName = Relations.GetTableName(entityType);
             List<PropertyInfo> columns = Relations.GetColumns(entityType).ToList();
@@ -28,9 +28,11 @@ namespace Tiger.ORM.Adapter
 
             if (entity.Top != -1)
                 sb.Append($" TOP {entity.Top}");
+            //generate agg and query column
+
 
             //generate query column
-            sb.Append(this.SetQueryColunm(entity.QueryColumn));
+            sb.Append(this.SetQueryColunm(entity.QueryColumn,entity.Aggregates));
             // FROM {TABLE}
             sb.Append($" FROM {tableName}");
             //Generate WHERE 
@@ -50,25 +52,40 @@ namespace Tiger.ORM.Adapter
 
             return sb.ToString();
         }
-        private string SetQueryColunm(IEnumerable<PropertyInfo> queryColumns)
+        private string SetQueryColunm(IEnumerable<PropertyInfo> queryColumns, AggregateEnum aggregate)
         {
-            int queryCount = queryColumns.Count();
-            if (queryColumns == null || queryCount <= 0)
-                return " *";
-            StringBuilder sb = new StringBuilder();
-            sb.Append(" ");
-            int index = 0,
-                count = queryCount - 1;
-            foreach (var item in queryColumns)
+            if ((queryColumns != null && aggregate != AggregateEnum.None) && queryColumns.Count() > 1)
+                throw new Exceptions.TigerORMException("目前只支持单列的聚合函数，如需使用多列，请用SQL语句完成");
+            if (aggregate != AggregateEnum.None)
             {
-                string columnName = Relations.GetColumnNameIncludeKey(item);
-                sb.Append(columnName);
-                if (index < count)
-                    sb.Append(",");
-                index++;
+                PropertyInfo aggProperty = queryColumns?.FirstOrDefault(); 
+                string aggColumn = null;
+                if (aggProperty == null)
+                    aggColumn = "1";
+                else
+                    aggColumn = Relations.GetColumnName(aggProperty);
+                return $" {aggregate.ToString().ToUpper()}({aggColumn})";
             }
+            else
+            {
+                if (queryColumns == null || queryColumns.Count() <= 0)
+                    return " *";
+                int queryCount = queryColumns.Count();
+                StringBuilder sb = new StringBuilder();
+                sb.Append(" ");
+                int index = 0,
+                    count = queryCount - 1;
+                foreach (var item in queryColumns)
+                {
+                    string columnName = Relations.GetColumnNameIncludeKey(item);
+                    sb.Append(columnName);
+                    if (index < count)
+                        sb.Append(",");
+                    index++;
+                }
 
-            return sb.ToString();
+                return sb.ToString();
+            }
         }
 
         private string SetWhere(IEnumerable<LambdaWhereEntity> queryCondition, DynamicParameters parameters)
@@ -76,7 +93,7 @@ namespace Tiger.ORM.Adapter
             if (queryCondition == null || queryCondition.Count() <= 0)
                 return "";
             StringBuilder sb = new StringBuilder();
-            sb.Append(" WHERE");
+            sb.Append(" WHERE ");
             foreach (var item in queryCondition)
             {
                 if (item.Property == null)
@@ -86,24 +103,35 @@ namespace Tiger.ORM.Adapter
                 }
 
                 string columnName = Relations.GetColumnNameIncludeKey(item.Property);
-                if (item.Operation.ToLower() != "like")
+                string newColumnName = null,
+                       paraName = null;
+                if(item.Property.PropertyType.Name == "DateTime")
                 {
-                    string paraName = $"@{columnName}";
-                    sb.Append($"{_leftPlaceholder}{columnName}{_rightPlaceholder}{item.Operation}{paraName}");
-                    parameters.Add(paraName, item.Value);
+                    newColumnName = $"CONVERT(VARCHAR(10),{_leftPlaceholder}{columnName}{_rightPlaceholder},120)";
+                    paraName = $"CONVERT(VARCHAR(10),@{columnName},120)";
                 }
                 else
-                    sb.Append($"{_leftPlaceholder}{columnName}{_rightPlaceholder} {item.Operation} {item.Value}");
+                {
+                    newColumnName = $"{_leftPlaceholder}{columnName}{_rightPlaceholder}";
+                    paraName = $"@{columnName}";
+                }
+                if (item.Operation.ToLower() != "like")
+                {
+                    sb.Append($"{newColumnName}{item.Operation}{paraName}");
+                    parameters.Add($"@{columnName}", item.Value);
+                }
+                else
+                    sb.Append($"{newColumnName} {item.Operation} {item.Value}");
+                
             }
             return sb.ToString();
         }
 
-
         private string PorpetyToColumn(IEnumerable<PropertyInfo> properties, string defaultValue = "", string orderbyColumn = "")
         {
-            int propertyCount = properties.Count();
-            if (properties == null || propertyCount <= 0)
+            if (properties == null || properties.Count() <= 0)
                 return defaultValue;
+            int propertyCount = properties.Count();
             StringBuilder sb = new StringBuilder();
             int index = 0,
                 count = propertyCount - 1;
@@ -118,46 +146,5 @@ namespace Tiger.ORM.Adapter
             return sb.ToString();
         }
 
-        private string SetOrderBy(IEnumerable<PropertyInfo> orderby, out bool hasOrderBy, string byKey = "ASC")
-        {
-            hasOrderBy = false;
-            int orderbyCount = orderby.Count();
-            if (orderby == null || orderbyCount <= 0)
-                return "";
-            hasOrderBy = true;
-            StringBuilder sb = new StringBuilder();
-            int index = 0,
-                count = orderbyCount - 1;
-            foreach (var item in orderby)
-            {
-                string columnName = Relations.GetColumnName(item);
-                sb.Append($"{columnName} {byKey}");
-                if (index < count)
-                    sb.Append(",");
-                index++;
-            }
-            return sb.ToString();
-        }
-
-
-        private string GroupBy(IEnumerable<PropertyInfo> groupby)
-        {
-            int groupbyCount = groupby.Count();
-            if (groupby == null || groupbyCount <= 0)
-                return "";
-            StringBuilder sb = new StringBuilder();
-            int index = 0,
-               count = groupbyCount - 1;
-            foreach (var item in groupby)
-            {
-                string columnName = Relations.GetColumnName(item);
-                sb.Append($"{columnName}");
-                if (index < count)
-                    sb.Append(",");
-                index++;
-            }
-
-            return sb.ToString();
-        }
     }
 }

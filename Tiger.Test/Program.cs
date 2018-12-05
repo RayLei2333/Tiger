@@ -19,19 +19,30 @@ namespace Tiger.Test
     {
         static void Main(string[] args)
         {
-            List<string> list = new List<string>();
+            // List<string> list = new List<string>();
 
 
-            var a = list.Where(t => t == "").ToList();
+            //var a = list.Where(t => t == "").ToList();
             //IQueryable<Users>
             //a.OrderByDescending
             //SqlServerQueryable<TB_Customer_Info> queryable = new SqlServerQueryable<TB_Customer_Info>();
             ////queryable.Select(t => t.City,t.b,t.c).ToList()
             //queryable.Select(t => new { t.Id, t.City }).ToList();
-            TigerQueryable<TB_Customer_Info> queryable = new TigerQueryable<TB_Customer_Info>();
-            queryable.OrderBy(t => new { t.BrandId,t.Country });
+            //TigerQueryable<TB_Customer_Info> queryable = new TigerQueryable<TB_Customer_Info>();
+            //queryable.Select(t => new { t.Id, t.OpenId, t.NickName, t.Language }).FirstOrDefault();
 
+            //queryable.Select(t => t.Id).FirstOrDefault();
+            //queryable.Select(t => t.Id).FirstOrDefault();
+            //queryable.SelectColumn(t => new { t.Id, t.CreateTime, t.NickName });
+            //queryable.OrderBy(t => new { t.UpdateTime,t.City });
+            //queryable.FirstOrDefault();
 
+            using (TestContext context = new TestContext())
+            {
+                var a = context.Query<TB_Customer_Info>().Where(t => t.CreateTime <= DateTime.Now.AddDays(-1)).FirstOrDefault();
+                //context.Query<TB_Customer_Info>().Count();
+                //context.Query<TB_Customer_Info>().SelectColumn(t => t.BrandId).Count();
+            }
 
         }
 

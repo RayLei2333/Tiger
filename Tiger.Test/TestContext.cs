@@ -11,7 +11,7 @@ namespace Tiger.Test
 {
     public class TestContext : DbContext
     {
-        public TestContext() : base(new SqlConnection(""))
+        public TestContext() : base(new SqlConnection("Data Source=121.40.186.190;Initial Catalog=Monkey;User ID=sa;Password=tt$#@!123;"))
         {
         }
 

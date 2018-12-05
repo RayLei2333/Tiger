@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Tiger.ORM.Adapter;
 using Tiger.ORM.Utilities;
 
 namespace Tiger.ORM.Expressions
@@ -13,9 +14,16 @@ namespace Tiger.ORM.Expressions
     {
         public List<LambdaWhereEntity> WhereEntities = null;
 
+        private ISqlTimeHandle _timeHandle;
+
         public ExpressionAnalysis()
         {
             this.WhereEntities = new List<LambdaWhereEntity>();
+        }
+
+        internal ExpressionAnalysis(ISqlTimeHandle timeHandle) : this()
+        {
+            this._timeHandle = timeHandle;
         }
 
         public object Analysis(Expression expression, ref MemberType memberType)
@@ -64,7 +72,7 @@ namespace Tiger.ORM.Expressions
             string operation = this.GetOperator(exp.NodeType);
             //right expression
             object right = this.Analysis(expression.Right, ref rightType);
-           
+
 
             //propertyInfo = value
             var isKeyOperValue = (leftType == MemberType.Key && rightType == MemberType.Value);
@@ -153,8 +161,18 @@ namespace Tiger.ORM.Expressions
                 else
                 {
                     var mem = me.Expression as MemberExpression;
-                    if (mem != null)
+                    if (mem == null)
                     {
+                        if (me.Member.ReflectedType.FullName == "System.DateTime")
+                        {
+                            if (me.ToString() == "DateTime.Now")
+                            {
+                                memberType = MemberType.Value;
+                                //if (_timeHandle != null)
+                                //    return _timeHandle.TimeHandel(DateTime.Now.ToString("yyyy-MM-dd"), "120");
+                                return DateTime.Now.ToString();
+                            }
+                        }
                         //TODO://
                     }
                     else if (mem.Member.MemberType == MemberTypes.Property)
@@ -319,6 +337,12 @@ namespace Tiger.ORM.Expressions
                 default:
                     throw new Exception(string.Format("不支持{0}此种运算符查找！" + expressiontype));
             }
+        }
+
+
+        private void DateTimeHandle()
+        {
+
         }
     }
 }
