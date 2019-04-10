@@ -65,8 +65,8 @@ namespace Tiger.ORM
                 tableName = tableAttr.Name;
             //save table
             bool saveResult = _typeTableName.TryAdd(runtimeTypeHandle, tableName);
-            if (!saveResult)
-                throw new Tiger.ORM.Exceptions.TigerORMException("try add table to ConcurrentDictionary error.");
+            //if (!saveResult)
+            //    throw new Tiger.ORM.Exceptions.TigerORMException($"{tableName} try add table to ConcurrentDictionary error.");
 
         }
         private static void ObjectMapPrimaryKey(RuntimeTypeHandle runtimeTypeHandle, Type typeofClass, IEnumerable<PropertyInfo> properties, out PropertyInfo keyProperty)
@@ -77,15 +77,15 @@ namespace Tiger.ORM
                 throw new Tiger.ORM.Exceptions.TigerORMException($"{typeofClass.FullName} not define KeyAttribute.");
 
             bool result = _typeKey.TryAdd(runtimeTypeHandle, keyProperty);
-            if (!result)
-                throw new Tiger.ORM.Exceptions.TigerORMException("try add key to ConcurrentDictionary error.");
+            //if (!result)
+            //    throw new Tiger.ORM.Exceptions.TigerORMException("try add key to ConcurrentDictionary error.");
 
         }
         private static void ObjectMapColumn(RuntimeTypeHandle runtimeTypeHandle, Type typeofClass, IEnumerable<PropertyInfo> properties)
         {
             bool result = _typeColumn.TryAdd(runtimeTypeHandle, properties);
-            if (!result)
-                throw new Tiger.ORM.Exceptions.TigerORMException("try add column to ConcurrentDictionary error.");
+            //if (!result)
+            //    throw new Tiger.ORM.Exceptions.TigerORMException("try add column to ConcurrentDictionary error.");
         }
 
 
@@ -133,7 +133,7 @@ namespace Tiger.ORM
                 return property.Name;
             return keyAttribute.Name;
         }
-
+ 
         /// <summary>
         /// get map table all column.
         /// </summary>

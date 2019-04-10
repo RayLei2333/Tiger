@@ -23,7 +23,7 @@ namespace Tiger.ORM.Adapter
         public virtual string Insert(object entity, out DynamicParameters parameters)
         {
             Check.NotNull(entity, "insert entity");
-            string sqlTmpl = "INSERT INTO {0}({1}) VALUE ({2})";
+            string sqlTmpl = "INSERT INTO {0}({1}) VALUES ({2})";
             parameters = new DynamicParameters();
             //INSERT INTO table(C1,C2,C3,C4,C5) VALUES (@C1,@C2,@C3,@C4,@C5)
             Type entityType = entity.GetType();

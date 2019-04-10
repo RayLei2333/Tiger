@@ -143,7 +143,7 @@ namespace Tiger.ORM
 
         }
 
-        public virtual void Roolback()
+        public virtual void Rollback()
         {
             if (this.Transaction != null && _startTransaction == true)
             {

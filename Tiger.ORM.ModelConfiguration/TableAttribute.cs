@@ -1,5 +1,4 @@
 ﻿using System;
-using Tiger.ORM.Exceptions;
 
 namespace Tiger.ORM.ModelConfiguration
 {
@@ -14,8 +13,6 @@ namespace Tiger.ORM.ModelConfiguration
         
         public TableAttribute(string table)
         {
-            if (string.IsNullOrEmpty(table))
-                throw new TigerORMException("configuration table name is not null.");
             this.Name = table;
         }
     }
