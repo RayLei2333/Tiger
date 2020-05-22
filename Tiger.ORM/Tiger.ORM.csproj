@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1EDD0427-BA24-4F2E-9AB4-2DC55906EDA5}</ProjectGuid>
+    <ProjectGuid>{D29D2EDA-5B8D-42FF-856B-9843997A2C9E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tiger.ORM</RootNamespace>
     <AssemblyName>Tiger.ORM</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.50.5\lib\net451\Dapper.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,43 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Adapter\BaseQueryable.cs" />
-    <Compile Include="Adapter\IQueryAdapter.cs" />
-    <Compile Include="Adapter\ISqlAdapter.cs" />
-    <Compile Include="Adapter\ISqlTimeHandle.cs" />
-    <Compile Include="Adapter\MySql\MySqlAdapter.cs" />
-    <Compile Include="Adapter\MySql\MySqlTimeHandle.cs" />
-    <Compile Include="Adapter\SqlServer\SqlServerAdapter.cs" />
-    <Compile Include="Adapter\SqlServer\SqlServerQueryAdapter.cs" />
-    <Compile Include="Adapter\SqlServer\SqlServerTimeHandle.cs" />
-    <Compile Include="Adapter\StandardAdapter.cs" />
-    <Compile Include="ConnectionFactory.cs" />
-    <Compile Include="DbContext.cs" />
-    <Compile Include="DbType.cs" />
-    <Compile Include="Exceptions\TigerORMException.cs" />
-    <Compile Include="Expressions\DeleteLambda.cs" />
-    <Compile Include="Expressions\ExpressionAnalysis.cs" />
-    <Compile Include="Expressions\ITigerLambda.cs" />
-    <Compile Include="Expressions\ITigerQueryable.cs" />
-    <Compile Include="Expressions\Query\AggregateEntity.cs" />
-    <Compile Include="Expressions\Query\AggregateEnum.cs" />
-    <Compile Include="Expressions\Query\QueryEntity.cs" />
-    <Compile Include="Expressions\TigerQueryable.cs" />
-    <Compile Include="Expressions\UpdateLambda.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Relations.cs" />
-    <Compile Include="Utilities\Check.cs" />
-    <Compile Include="Utilities\LambdaWhereEntity.cs" />
-    <Compile Include="Utilities\MemberType.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Tiger.ORM.ModelConfiguration\Tiger.ORM.ModelConfiguration.csproj">
-      <Project>{f1b74282-ddda-4feb-ae35-23fb5911a0c4}</Project>
-      <Name>Tiger.ORM.ModelConfiguration</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
