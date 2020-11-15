@@ -42,16 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attr\ColumnAttribute.cs" />
-    <Compile Include="Attr\IgnoreAttribute.cs" />
-    <Compile Include="Attr\KeyType.cs" />
-    <Compile Include="Attr\KeyAttribute.cs" />
-    <Compile Include="Attr\ModelConfigAttribute.cs" />
-    <Compile Include="Exceptions\ModelConfigException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Attr\TableAttribute.cs" />
-    <Compile Include="RelationMap.cs" />
-    <Compile Include="Relations.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
