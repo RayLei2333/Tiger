@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tiger.ORM</RootNamespace>
     <AssemblyName>Tiger.ORM</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -42,12 +47,54 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dapper\CommandDefinition.cs" />
+    <Compile Include="Dapper\CommandFlags.cs" />
+    <Compile Include="Dapper\CustomPropertyTypeMap.cs" />
+    <Compile Include="Dapper\DataTableHandler.cs" />
+    <Compile Include="Dapper\DbString.cs" />
+    <Compile Include="Dapper\DefaultTypeMap.cs" />
+    <Compile Include="Dapper\DynamicParameters.CachedOutputSetters.cs" />
+    <Compile Include="Dapper\DynamicParameters.cs" />
+    <Compile Include="Dapper\DynamicParameters.ParamInfo.cs" />
+    <Compile Include="Dapper\ExplicitConstructorAttribute.cs" />
+    <Compile Include="Dapper\Extensions.cs" />
+    <Compile Include="Dapper\FeatureSupport.cs" />
+    <Compile Include="Dapper\SimpleMemberMap.cs" />
+    <Compile Include="Dapper\SqlDataRecordHandler.cs" />
+    <Compile Include="Dapper\SqlDataRecordListTVPParameter.cs" />
+    <Compile Include="Dapper\SqlMapper.Async.cs" />
+    <Compile Include="Dapper\SqlMapper.CacheInfo.cs" />
+    <Compile Include="Dapper\SqlMapper.cs" />
+    <Compile Include="Dapper\SqlMapper.DapperRow.cs" />
+    <Compile Include="Dapper\SqlMapper.DapperRow.Descriptor.cs" />
+    <Compile Include="Dapper\SqlMapper.DapperRowMetaObject.cs" />
+    <Compile Include="Dapper\SqlMapper.DapperTable.cs" />
+    <Compile Include="Dapper\SqlMapper.DeserializerState.cs" />
+    <Compile Include="Dapper\SqlMapper.DontMap.cs" />
+    <Compile Include="Dapper\SqlMapper.GridReader.Async.cs" />
+    <Compile Include="Dapper\SqlMapper.GridReader.cs" />
+    <Compile Include="Dapper\SqlMapper.ICustomQueryParameter.cs" />
+    <Compile Include="Dapper\SqlMapper.IDataReader.cs" />
+    <Compile Include="Dapper\SqlMapper.Identity.cs" />
+    <Compile Include="Dapper\SqlMapper.IDynamicParameters.cs" />
+    <Compile Include="Dapper\SqlMapper.IMemberMap.cs" />
+    <Compile Include="Dapper\SqlMapper.IParameterCallbacks.cs" />
+    <Compile Include="Dapper\SqlMapper.IParameterLookup.cs" />
+    <Compile Include="Dapper\SqlMapper.ITypeHandler.cs" />
+    <Compile Include="Dapper\SqlMapper.ITypeMap.cs" />
+    <Compile Include="Dapper\SqlMapper.Link.cs" />
+    <Compile Include="Dapper\SqlMapper.LiteralToken.cs" />
+    <Compile Include="Dapper\SqlMapper.Settings.cs" />
+    <Compile Include="Dapper\SqlMapper.TypeDeserializerCache.cs" />
+    <Compile Include="Dapper\SqlMapper.TypeHandler.cs" />
+    <Compile Include="Dapper\SqlMapper.TypeHandlerCache.cs" />
+    <Compile Include="Dapper\TableValuedParameter.cs" />
+    <Compile Include="Dapper\TypeExtensions.cs" />
+    <Compile Include="Dapper\UdtTypeHandler.cs" />
+    <Compile Include="Dapper\WrappedDataReader.cs" />
+    <Compile Include="Dapper\WrappedReader.cs" />
+    <Compile Include="Dapper\XmlHandlers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Dapper">
-      <Version>1.60.6</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
