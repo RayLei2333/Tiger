@@ -94,7 +94,17 @@
     <Compile Include="Dapper\WrappedDataReader.cs" />
     <Compile Include="Dapper\WrappedReader.cs" />
     <Compile Include="Dapper\XmlHandlers.cs" />
+    <Compile Include="Adapter\ISqlAdapter.cs" />
+    <Compile Include="MapInfo\PropertyMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TigerDbContext.cs" />
+    <Compile Include="MapInfo\TigerRelationMap.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tiger.ORM.ModelConfiguration\Tiger.ORM.ModelConfiguration.csproj">
+      <Project>{1e6f2625-1900-4d20-aa99-657dcc8974d0}</Project>
+      <Name>Tiger.ORM.ModelConfiguration</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

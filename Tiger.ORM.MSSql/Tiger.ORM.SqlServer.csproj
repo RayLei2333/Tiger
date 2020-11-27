@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1E6F2625-1900-4D20-AA99-657DCC8974D0}</ProjectGuid>
+    <ProjectGuid>{D77B2D2C-F7AC-4788-89EE-FC47BCA70BFF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tiger.ORM.ModelConfiguration</RootNamespace>
-    <AssemblyName>Tiger.ORM.ModelConfiguration</AssemblyName>
+    <RootNamespace>Tiger.ORM.SqlServer</RootNamespace>
+    <AssemblyName>Tiger.ORM.SqlServer</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,7 +29,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -44,12 +41,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attr\ColumnAttribute.cs" />
-    <Compile Include="Attr\IgnoreAttribute.cs" />
-    <Compile Include="Attr\KeyAttribute.cs" />
-    <Compile Include="Attr\TableAttribute.cs" />
-    <Compile Include="Attr\TigerModelConfigAttribute.cs" />
+    <Compile Include="Adapter\SqlAdapter.cs" />
+    <Compile Include="DbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tiger.ORM.ModelConfiguration\Tiger.ORM.ModelConfiguration.csproj">
+      <Project>{1e6f2625-1900-4d20-aa99-657dcc8974d0}</Project>
+      <Name>Tiger.ORM.ModelConfiguration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tiger.ORM\Tiger.ORM.csproj">
+      <Project>{d29d2eda-5b8d-42ff-856b-9843997a2c9e}</Project>
+      <Name>Tiger.ORM</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
