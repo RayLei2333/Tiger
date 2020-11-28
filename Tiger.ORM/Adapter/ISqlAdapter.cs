@@ -12,5 +12,7 @@ namespace Tiger.ORM.Adapter
         string Insert(object entity, DynamicParameters parameters);
 
         string Insert<T>(IEnumerable<T> entities, DynamicParameters parameters);
+
+        string Delete<T>(object key, DynamicParameters parameters);
     }
 }

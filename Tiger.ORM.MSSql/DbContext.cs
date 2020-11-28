@@ -7,13 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tiger.ORM.Adapter;
+using Tiger.ORM.Expressions;
 using Tiger.ORM.MapInfo;
 using Tiger.ORM.SqlServer.Adapter;
+using Tiger.ORM.SqlServer.Expressions;
 using Tiger.ORM.SqlServer.Utilities;
 
 namespace Tiger.ORM.SqlServer
 {
-    public abstract class DbContext : TigerDbContext
+    public class DbContext : TigerDbContext
     {
         //internal ISqlAdapter Adapter { };
         public DbContext(IDbConnection connection) : base(connection)
@@ -55,6 +57,17 @@ namespace Tiger.ORM.SqlServer
 
         }
 
-        
+        public virtual int Delete<T>(object key, int? commandTimeout = null, CommandType? commandType = null)
+        {
+            DynamicParameters parameters = null;
+            string sql = this.Adapter.Delete<T>(key, parameters);
+            int result = this.Connection.Execute(sql, parameters, this.Transaction, commandTimeout, commandType);
+            return result;
+        }
+
+        public virtual ITigerLambda<T> Delete<T>()
+        {
+            return new DeleteLambda<T>(this);
+        }
     }
 }

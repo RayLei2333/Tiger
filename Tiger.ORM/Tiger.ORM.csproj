@@ -95,6 +95,11 @@
     <Compile Include="Dapper\WrappedReader.cs" />
     <Compile Include="Dapper\XmlHandlers.cs" />
     <Compile Include="Adapter\ISqlAdapter.cs" />
+    <Compile Include="Exceptions\TigerORMException.cs" />
+    <Compile Include="Expressions\ExpressionAnalysis.cs" />
+    <Compile Include="Expressions\ITigerLambda.cs" />
+    <Compile Include="Expressions\LambdaProperty.cs" />
+    <Compile Include="Expressions\TigerMemberType.cs" />
     <Compile Include="MapInfo\PropertyMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TigerDbContext.cs" />

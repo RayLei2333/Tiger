@@ -2,29 +2,36 @@
 using Dapper;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tiger.ORM.SqlServer;
 using Tiger.ORM.SqlServer.Adapter;
 
 namespace ConsoleApp1
 {
     class Program
     {
+        public static string cc1 = "";
+
         static void Main(string[] args)
         {
-            T_WeChat_User u = new T_WeChat_User();
-            SqlAdapter adapter = new SqlAdapter();
-            DynamicParameters para = new DynamicParameters();
-            string sql = adapter.Insert(u, para);
-            Console.WriteLine(sql);
-            IEnumerable<string> paraName = para.ParameterNames;
-            Console.WriteLine("参数");
-            foreach (var item in paraName)
+            DeleteLambdaTest();
+        }
+
+        private static void DeleteLambdaTest()
+        {
+
+            using (DbContext context = new DbContext(new SqlConnection("")))
             {
-                Console.WriteLine($"{item} = {para.Get<object>(item)}");
+                //context.Delete<T_WeChat_User>().Where(t => t.Id == cc1);
+                //context.Delete<T_WeChat_User>().Where(t => t.CreateTime == DateTime.Now);
+                //context.Delete<T_WeChat_User>().Where(t => t.CreateTime == new DateTime(2020, 10, 22, 12, 34, 12));
+                //context.Delete<T_wehc>
+                //context.Delete<T_WeChat_User>().Where(t => t.Gender == new T_WeChat_User().Gender);
+                context.Delete<T_WeChat_User>().Where(t => t.Gender == Convert.ToInt32("3"));
             }
-            Console.ReadKey();
         }
 
         //INSERT INTO T_WeChat_User([Id],[NickName],[City],[Province],[Country],[Gender],[CreateTime]) VALUES 

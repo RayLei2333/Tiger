@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Tiger.ORM.Adapter;
+using Tiger.ORM.Exceptions;
 using Tiger.ORM.MapInfo;
 using Tiger.ORM.ModelConfiguration.Attr;
 
@@ -15,6 +16,7 @@ namespace Tiger.ORM.SqlServer.Adapter
         protected string LeftPlaceholder { get { return "["; } }
 
         protected string RightPlaceholder { get { return "]"; } }
+
 
         #region "Insert"
         public string Insert(object entity, DynamicParameters parameters)
@@ -90,5 +92,25 @@ namespace Tiger.ORM.SqlServer.Adapter
             return string.Join(",", columnParaStrList);
         }
         #endregion
+
+
+        public string Delete<T>(object key, DynamicParameters parameters)
+        {
+            Type typeofClass = typeof(T);
+
+            PropertyMap keyMap = TigerRelationMap.GetKey(typeofClass);
+            if (keyMap == null)
+                throw new TigerORMException("未配置主键，无法执行.");
+
+            string tableName = TigerRelationMap.GetTableName(typeofClass);
+
+            if (parameters == null)
+                parameters = new DynamicParameters();
+
+            string sql = $"DELETE FROM {tableName} WHERE {keyMap.Name}=@{keyMap.Name}";
+            parameters.Add($"@{keyMap.Name}", key);
+
+            return sql;
+        }
     }
 }
