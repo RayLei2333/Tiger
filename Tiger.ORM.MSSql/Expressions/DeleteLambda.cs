@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Tiger.ORM.Adapter;
 using Tiger.ORM.Expressions;
 
 namespace Tiger.ORM.SqlServer.Expressions
@@ -17,9 +19,12 @@ namespace Tiger.ORM.SqlServer.Expressions
 
         private ExpressionAnalysis _expressionAnalysis { get; set; }
 
-        public DeleteLambda(TigerDbContext context)
+        private ISqlAdapter _adapter { get; set; }
+
+        public DeleteLambda(TigerDbContext context, ISqlAdapter adapter)
         {
             this._tigerDbContext = context;
+            this._adapter = adapter;
             this._whereList = new List<LambdaProperty>();
             this._expressionAnalysis = new ExpressionAnalysis();
         }
@@ -27,7 +32,12 @@ namespace Tiger.ORM.SqlServer.Expressions
         public int Execute(int? commandTimeout = null, CommandType? commandType = null)
         {
             this._whereList.AddRange(this._expressionAnalysis.LambdaProperties);
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            DynamicParameters parameters = null;
+            string sql = this._adapter.Delete<T>(this._whereList, parameters);
+            Console.WriteLine(sql);
+            //int result = this._tigerDbContext.Connection.Execute(sql, parameters, this._tigerDbContext.Transaction, commandTimeout, commandType);
+            return -1;
         }
 
         public ITigerLambda<T> Where(Expression<Func<T, bool>> predicate)

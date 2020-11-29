@@ -30,7 +30,9 @@ namespace ConsoleApp1
                 //context.Delete<T_WeChat_User>().Where(t => t.CreateTime == new DateTime(2020, 10, 22, 12, 34, 12));
                 //context.Delete<T_wehc>
                 //context.Delete<T_WeChat_User>().Where(t => t.Gender == new T_WeChat_User().Gender);
-                context.Delete<T_WeChat_User>().Where(t => t.Gender == Convert.ToInt32("3"));
+                //context.Delete<T_WeChat_User>().Where(t => t.Gender == Convert.ToInt32("3"));
+                context.Delete<T_WeChat_User>().Where(t => t.Gender == 1 && t.CreateTime == DateTime.Now).Execute();
+                context.Delete<T_WeChat_User>().Execute();
             }
         }
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Tiger.ORM.Adapter;
 using Tiger.ORM.Exceptions;
+using Tiger.ORM.Expressions;
 using Tiger.ORM.MapInfo;
 using Tiger.ORM.ModelConfiguration.Attr;
 
@@ -93,14 +94,14 @@ namespace Tiger.ORM.SqlServer.Adapter
         }
         #endregion
 
-
+        #region "Delete"
         public string Delete<T>(object key, DynamicParameters parameters)
         {
             Type typeofClass = typeof(T);
 
             PropertyMap keyMap = TigerRelationMap.GetKey(typeofClass);
             if (keyMap == null)
-                throw new TigerORMException("未配置主键，无法执行.");
+                throw new TigerORMException($"{typeofClass.FullName}未配置主键，无法执行.");
 
             string tableName = TigerRelationMap.GetTableName(typeofClass);
 
@@ -110,6 +111,77 @@ namespace Tiger.ORM.SqlServer.Adapter
             string sql = $"DELETE FROM {tableName} WHERE {keyMap.Name}=@{keyMap.Name}";
             parameters.Add($"@{keyMap.Name}", key);
 
+            return sql;
+        }
+
+        public string Delete<T>(IEnumerable<LambdaProperty> properties, DynamicParameters parameters)
+        {
+            Type typeofClass = typeof(T);
+            string tableName = TigerRelationMap.GetTableName(typeofClass);
+            PropertyMap key = TigerRelationMap.GetKey(typeofClass);
+            List<PropertyMap> columns = TigerRelationMap.GetColumns(typeofClass).ToList();
+            if (key != null)
+                columns.Add(key);
+            if (parameters == null)
+                parameters = new DynamicParameters();
+
+            StringBuilder sb = new StringBuilder();
+            int index = 0;
+            foreach (var item in properties)
+            {
+                if (item.Property == null)
+                {
+                    sb.Append($" {item.Operation} ");
+                    continue;
+                }
+
+                PropertyMap map = columns.Where(t => t.PropertyInfo == item.Property).FirstOrDefault();
+                if (map == null)
+                    throw new TigerORMException($"未找到属性{item.Property.Name}的列映射.");
+
+                sb.Append($"{this.LeftPlaceholder}{map.Name}{this.RightPlaceholder}{item.Operation}@{map.Name + index}");
+                parameters.Add($"@{map.Name + index}", item.Value);
+                index++;
+            }
+
+            string sql = $"DELETE FROM {tableName}";
+            if (properties.Count() > 0)
+                sql += $" WHERE {sb.ToString()}";
+            return sql;
+        }
+        #endregion
+
+
+        public string Update(object entity, DynamicParameters parameters)
+        {
+            Type typeofClass = entity.GetType();
+            string tableName = TigerRelationMap.GetTableName(typeofClass);
+            PropertyMap key = TigerRelationMap.GetKey(typeofClass);
+            if (key == null)
+                throw new TigerORMException($"{typeofClass.FullName}未配置主键，无法执行.");
+            IEnumerable<PropertyMap> columns = TigerRelationMap.GetColumns(typeofClass);
+            if (parameters == null)
+                parameters = new DynamicParameters();
+
+
+            object keyValue = key.PropertyInfo.GetValue(entity);
+            if (keyValue == null && (key.KeyType == KeyType.GUID || key.KeyType == KeyType.AutoGUID))
+                throw new TigerORMException($"{typeofClass.FullName}主键值为空");
+            if (key.KeyType == KeyType.Identity && Convert.ToInt32(keyValue) == 0)
+                throw new TigerORMException($"{typeofClass.FullName}主键值为0");
+
+            string where = $"{key.Name}=@{key.Name}";
+            parameters.Add($"@{key.Name}", keyValue);
+
+
+            List<string> setList = new List<string>();
+            foreach (var item in columns)
+            {
+                string set = $"{this.LeftPlaceholder}{item.Name}{this.RightPlaceholder}=@{item.Name}";
+                parameters.Add($"@{item.Name}", item.PropertyInfo.GetValue(entity));
+            }
+
+            string sql = $"UPDATE {tableName} SET {string.Join(",", setList)} WHERE {where};";
             return sql;
         }
     }

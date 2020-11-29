@@ -17,7 +17,6 @@ namespace Tiger.ORM.SqlServer
 {
     public class DbContext : TigerDbContext
     {
-        //internal ISqlAdapter Adapter { };
         public DbContext(IDbConnection connection) : base(connection)
         {
             this.Adapter = new SqlAdapter();
@@ -67,7 +66,15 @@ namespace Tiger.ORM.SqlServer
 
         public virtual ITigerLambda<T> Delete<T>()
         {
-            return new DeleteLambda<T>(this);
+            return new DeleteLambda<T>(this, this.Adapter);
+        }
+
+        public virtual int Update(object entity, int? commandTimeout = null, CommandType? commandType = null)
+        {
+            DynamicParameters parameters = null;
+            string sql = this.Adapter.Update(entity, parameters);
+            int result = this.Connection.Execute(sql, parameters, this.Transaction, commandTimeout, commandType);
+            return result;
         }
     }
 }
