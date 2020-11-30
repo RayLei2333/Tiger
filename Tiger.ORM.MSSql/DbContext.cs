@@ -76,5 +76,35 @@ namespace Tiger.ORM.SqlServer
             int result = this.Connection.Execute(sql, parameters, this.Transaction, commandTimeout, commandType);
             return result;
         }
+
+        public virtual ITigerUpdateLambda<T> Update<T>()
+        {
+            return new UpdateLambda<T>(this, this.Adapter);
+        }
+
+        public virtual int Execute(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        {
+            return this.Connection.Execute(sql, param, this.Transaction, commandTimeout, commandType);
+        }
+
+        public virtual T ExecuteScan<T>(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        {
+            return this.Connection.ExecuteScalar<T>(sql, param, this.Transaction, commandTimeout, commandType);
+        }
+
+        public virtual IEnumerable<T> Query<T>(string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
+        {
+            return this.Connection.Query<T>(sql, param, this.Transaction, buffered, commandTimeout, commandType);
+        }
+
+        public virtual IEnumerable<object> Query(Type entityType, string sql, object param = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
+        {
+            return this.Connection.Query(entityType, sql, param, this.Transaction, buffered, commandTimeout, commandType);
+        }
+
+        public virtual T Get<T>(string sql, object param = null, int? commandTimeout = null, CommandType? commandType = null)
+        {
+            return this.Connection.QueryFirstOrDefault<T>(sql, param, this.Transaction, commandTimeout, commandType);
+        }
     }
 }

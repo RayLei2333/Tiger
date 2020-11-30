@@ -125,28 +125,9 @@ namespace Tiger.ORM.SqlServer.Adapter
             if (parameters == null)
                 parameters = new DynamicParameters();
 
-            StringBuilder sb = new StringBuilder();
-            int index = 0;
-            foreach (var item in properties)
-            {
-                if (item.Property == null)
-                {
-                    sb.Append($" {item.Operation} ");
-                    continue;
-                }
-
-                PropertyMap map = columns.Where(t => t.PropertyInfo == item.Property).FirstOrDefault();
-                if (map == null)
-                    throw new TigerORMException($"未找到属性{item.Property.Name}的列映射.");
-
-                sb.Append($"{this.LeftPlaceholder}{map.Name}{this.RightPlaceholder}{item.Operation}@{map.Name + index}");
-                parameters.Add($"@{map.Name + index}", item.Value);
-                index++;
-            }
-
             string sql = $"DELETE FROM {tableName}";
             if (properties.Count() > 0)
-                sql += $" WHERE {sb.ToString()}";
+                sql += $" WHERE {this.WhereSql(columns, properties, parameters)}";
             return sql;
         }
         #endregion
@@ -183,6 +164,60 @@ namespace Tiger.ORM.SqlServer.Adapter
 
             string sql = $"UPDATE {tableName} SET {string.Join(",", setList)} WHERE {where};";
             return sql;
+        }
+
+        public string Update<T>(IEnumerable<LambdaProperty> sqlSetList, IEnumerable<LambdaProperty> sqlWhereList, DynamicParameters parameters)
+        {
+            Type typeofClass = typeof(T);
+            string tableName = TigerRelationMap.GetTableName(typeofClass);
+            PropertyMap key = TigerRelationMap.GetKey(typeofClass);
+            List<PropertyMap> columns = TigerRelationMap.GetColumns(typeofClass).ToList();
+            if (key != null)
+                columns.Add(key);
+
+            if (parameters == null)
+                parameters = new DynamicParameters();
+
+            List<string> sqlSet = new List<string>();
+            foreach (var item in sqlSetList)
+            {
+                PropertyMap map = columns.Where(t => t.PropertyInfo == item.Property).FirstOrDefault();
+                if (map == null)
+                    throw new TigerORMException($"未在{typeofClass.Name}找到{item.Property.Name}的配置.");
+
+                sqlSet.Add($"{this.LeftPlaceholder}{map.Name}{this.RightPlaceholder}=@{map.Name}");
+                parameters.Add($"@{map.Name}", item.Value);
+            }
+
+            string sql = $"UPDATE {tableName} SET {string.Join(",", sqlSet)}";
+            if (sqlWhereList.Count() > 0)
+                sql += $" WHERE {this.WhereSql(columns, sqlWhereList, parameters)}";
+
+            return sql;
+        }
+
+        private string WhereSql(IEnumerable<PropertyMap> columns, IEnumerable<LambdaProperty> sqlWhereList, DynamicParameters parameters)
+        {
+            StringBuilder sb = new StringBuilder();
+            int index = 0;
+            foreach (var item in sqlWhereList)
+            {
+                if (item.Property == null)
+                {
+                    sb.Append($" {item.Operation} ");
+                    continue;
+                }
+
+                PropertyMap map = columns.Where(t => t.PropertyInfo == item.Property).FirstOrDefault();
+                if (map == null)
+                    throw new TigerORMException($"未找到属性{item.Property.Name}的列映射.");
+
+                sb.Append($"{this.LeftPlaceholder}{map.Name}{this.RightPlaceholder}{item.Operation}@{map.Name + index}");
+                parameters.Add($"@{map.Name + index}", item.Value);
+                index++;
+            }
+
+            return sb.ToString();
         }
     }
 }

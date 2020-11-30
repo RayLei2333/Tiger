@@ -44,6 +44,7 @@
     <Compile Include="Adapter\SqlAdapter.cs" />
     <Compile Include="DbContext.cs" />
     <Compile Include="Expressions\DeleteLambda.cs" />
+    <Compile Include="Expressions\UpdateLambda.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\DataTableConvert.cs" />
   </ItemGroup>

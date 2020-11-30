@@ -19,5 +19,7 @@ namespace Tiger.ORM.Adapter
         string Delete<T>(IEnumerable<LambdaProperty> properties, DynamicParameters parameters);
 
         string Update(object entity, DynamicParameters parameters);
+
+        string Update<T>(IEnumerable<LambdaProperty> sqlSetList, IEnumerable<LambdaProperty> sqlWhereList, DynamicParameters parameters);
     }
 }

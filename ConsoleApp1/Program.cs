@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Tiger.ORM.SqlServer;
@@ -17,8 +18,11 @@ namespace ConsoleApp1
 
         static void Main(string[] args)
         {
-            DeleteLambdaTest();
+            //DeleteLambdaTest();
+            UpdateLambdaTest();
         }
+
+
 
         private static void DeleteLambdaTest()
         {
@@ -33,6 +37,18 @@ namespace ConsoleApp1
                 //context.Delete<T_WeChat_User>().Where(t => t.Gender == Convert.ToInt32("3"));
                 context.Delete<T_WeChat_User>().Where(t => t.Gender == 1 && t.CreateTime == DateTime.Now).Execute();
                 context.Delete<T_WeChat_User>().Execute();
+            }
+        }
+
+        private static void UpdateLambdaTest()
+        {
+            using (DbContext db = new DbContext(new SqlConnection("")))
+            {
+                db.Update<T_WeChat_User>().Set(t => new T_WeChat_User
+                {
+                    Id = Guid.NewGuid().ToString("d"),
+                    City = "ShangHai"
+                });
             }
         }
 

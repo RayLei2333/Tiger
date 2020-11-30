@@ -98,6 +98,7 @@
     <Compile Include="Exceptions\TigerORMException.cs" />
     <Compile Include="Expressions\ExpressionAnalysis.cs" />
     <Compile Include="Expressions\ITigerLambda.cs" />
+    <Compile Include="Expressions\ITigerUpdateLambda.cs" />
     <Compile Include="Expressions\LambdaProperty.cs" />
     <Compile Include="Expressions\TigerMemberType.cs" />
     <Compile Include="MapInfo\PropertyMap.cs" />

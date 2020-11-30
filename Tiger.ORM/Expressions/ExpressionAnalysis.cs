@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -54,7 +55,23 @@ namespace Tiger.ORM.Expressions
                 NewExpression ne = (NewExpression)expression;
                 return this.New(ne);
             }
-                return null;
+            else if (expression is MemberInitExpression)
+            {
+                MemberInitExpression mie = (MemberInitExpression)expression;
+                object entity = Expression.Lambda(mie).Compile().DynamicInvoke();
+                ReadOnlyCollection<MemberBinding> bindings = mie.Bindings;
+                foreach (MemberBinding item in bindings)
+                {
+                    PropertyInfo property = item.Member as PropertyInfo;
+                    LambdaProperty lambdaProperty = new LambdaProperty()
+                    {
+                        Property = property,
+                        Value = property.GetValue(entity)
+                    };
+                    this.LambdaProperties.Add(lambdaProperty);
+                }
+            }
+            return null;
         }
 
         //二进制运算
@@ -285,6 +302,7 @@ namespace Tiger.ORM.Expressions
             return null;
         }
 
+        //New表达式
         private object New(Expression exp)
         {
             NewExpression ne = (NewExpression)exp;
@@ -297,6 +315,12 @@ namespace Tiger.ORM.Expressions
 
             object obj = ne.Constructor.Invoke(arg);
             return obj;
+        }
+
+        private object MemberInit(Expression exp)
+        {
+            //MemberInitExpression
+            return null;
         }
 
         /// 根据条件生成对应的sql查询操作符
