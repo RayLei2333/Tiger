@@ -3,37 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiger.ORM", "Tiger.ORM\Tiger.ORM.csproj", "{D29D2EDA-5B8D-42FF-856B-9843997A2C9E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiger.ORM.ModelConfiguration", "Tiger.ORM.ModelConfiguration\Tiger.ORM.ModelConfiguration.csproj", "{1E6F2625-1900-4D20-AA99-657DCC8974D0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiger.ORM.SqlServer", "Tiger.ORM.MSSql\Tiger.ORM.SqlServer.csproj", "{D77B2D2C-F7AC-4788-89EE-FC47BCA70BFF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{59099CAC-DEC8-4EE0-950D-5F885131CA90}"
-EndProject
 Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D29D2EDA-5B8D-42FF-856B-9843997A2C9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D29D2EDA-5B8D-42FF-856B-9843997A2C9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D29D2EDA-5B8D-42FF-856B-9843997A2C9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D29D2EDA-5B8D-42FF-856B-9843997A2C9E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E6F2625-1900-4D20-AA99-657DCC8974D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E6F2625-1900-4D20-AA99-657DCC8974D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E6F2625-1900-4D20-AA99-657DCC8974D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E6F2625-1900-4D20-AA99-657DCC8974D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D77B2D2C-F7AC-4788-89EE-FC47BCA70BFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D77B2D2C-F7AC-4788-89EE-FC47BCA70BFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D77B2D2C-F7AC-4788-89EE-FC47BCA70BFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D77B2D2C-F7AC-4788-89EE-FC47BCA70BFF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{59099CAC-DEC8-4EE0-950D-5F885131CA90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{59099CAC-DEC8-4EE0-950D-5F885131CA90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{59099CAC-DEC8-4EE0-950D-5F885131CA90}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{59099CAC-DEC8-4EE0-950D-5F885131CA90}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
